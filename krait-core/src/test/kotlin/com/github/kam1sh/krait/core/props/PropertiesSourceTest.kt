@@ -15,6 +15,7 @@ class PropertiesSourceTest {
     fun before() {
         val props = Properties()
         props["app.key"] = "test"
+        props["app.nested"] = "wow"
         props["app.nested.key"] = "val"
         props["app.nested.key2"] = "val2"
         props["app.nested.next.key"] = "val3"
@@ -37,7 +38,7 @@ class PropertiesSourceTest {
         assertEquals("val", src.get(listOf("nested", "key"), String::class.java))
         assertEquals("val2", src.get(listOf("nested", "key2"), String::class.java))
         assertEquals("val3", src.get(listOf("nested", "next", "key"), String::class.java))
-        assertNull(src.get(listOf("nested"), String::class.java))
+        assertEquals("wow",  src.get(listOf("nested"), String::class.java))
     }
 
     @Test fun testRootEntries() {
@@ -47,6 +48,7 @@ class PropertiesSourceTest {
 
     @Test fun testEntries() {
         val entries = src.entries(listOf("nested"), String::class.java)
+        println(entries)
         assertEquals(3, entries.size)
         assertEquals("val", entries["key"]?.text())
         assertEquals("val2", entries["key2"]?.text())

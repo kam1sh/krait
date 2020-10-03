@@ -50,7 +50,6 @@ class PropertiesSource(val prefix: String): ConfigSource {
                 current = current[key] ?: throw ValueNotFoundException(keys)
             }
         }
-//        return current[prefix]?.configNodes(cls) ?: throw ValueNotFoundException(keys)
         throw ValueNotFoundException(keys)
     }
 
@@ -62,7 +61,11 @@ class PropertiesSource(val prefix: String): ConfigSource {
         var current = parsedProps
          for (key in keys) {
             if (keys.lastIndexOf(key) == keys.size - 1) {
-                current[key] = Entry(value)
+                if (current.containsKey(key)) {
+                    current[key]!!.value = value
+                } else  {
+                    current[key] = Entry(value)
+                }
             } else {
                 if (!current.containsKey(key)) current[key] = Entry(null)
                 current = current[key]!!
@@ -95,6 +98,11 @@ class PropertiesSource(val prefix: String): ConfigSource {
                 result[item.key as T] = PropertiesConfigNode(item.value)
             }
             return result
+        }
+
+        override fun put(key: String, value: Entry): Entry? {
+            if (containsKey(key)) throw IllegalArgumentException("Key $key has already been set.")
+            return super.put(key, value)
         }
     }
 }
