@@ -1,9 +1,11 @@
 package com.github.kam1sh.krait.core.env
 
+import com.github.kam1sh.krait.core.exceptions.ValueNotFoundException
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 class EnvironmentSourceTest {
     lateinit var src: EnvironmentSource
@@ -21,16 +23,16 @@ class EnvironmentSourceTest {
     }
 
     @Test fun testKey() {
-        assertEquals("1", src[listOf("key")])
+        assertEquals("1", src.get(listOf("key"), String::class.java))
     }
 
     @Test fun testKeyWithUnderscore() {
-        assertEquals("2", src[listOf("another_key")])
+        assertEquals("2", src.get(listOf("another_key"), String::class.java))
     }
 
     @Test fun testNestedKey() {
-        assertEquals("3", src[listOf("nested", "key")])
-        assertEquals("4", src[listOf("nested", "key2")])
-        assertNull(src[listOf("another", "key")])
+        assertEquals("3", src.get(listOf("nested", "key"), String::class.java))
+        assertEquals("4", src.get(listOf("nested", "key2"), String::class.java))
+        assertNull(src.get(listOf("another", "key"), String::class.java))
     }
 }

@@ -1,8 +1,10 @@
 package com.github.kam1sh.krait.core
 
+import com.github.kam1sh.krait.core.exceptions.ValueNotFoundException
 import com.github.kam1sh.krait.core.props.PropertiesSource
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import java.util.*
 
 class KraitTest {
@@ -24,7 +26,7 @@ class KraitTest {
         assertEquals("val", kr["key"]["item"].text())
         assertEquals(1, kr["key"]["num"].long())
         assertEquals(1, kr["key"]["num"].int())
-        assertEquals(ConfigNode.Absent, kr["key"]["absent"].rawWithoutNull())
+        assertThrows<ValueNotFoundException> {kr["key"]["absent"].decodeTo(String::class.java)}
         assertTrue(kr["key"]["absent"].isAbsent())
         assertFalse(kr["key"]["bool"].bool())
         assertTrue(kr["key"]["bool-true"].bool())

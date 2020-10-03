@@ -6,46 +6,33 @@ import com.github.kam1sh.krait.core.exceptions.ValueNotFoundException
 /**
  * Node (or branch/leaf) of a configuration tree.
  */
-class ConfigNode(
-    private val krait: Krait,
-    private val keys: Keys
-) {
-    fun text(): String {
-        val item = retrieve()
-        return when(item) {
-            is String -> item
-            else -> item.toString()
+interface ConfigNode {
+    fun text() = decodeTo(String::class.java)
+
+    fun long() = decodeTo(Long::class.java)
+
+    fun int() = decodeTo(Int::class.java)
+
+    fun bool() = decodeTo(Boolean::class.java)
+
+    fun isAbsent(): Boolean {
+        try {
+            text()
+            return false
+        } catch (exc: ValueNotFoundException) {
+            return true
         }
     }
 
-    fun long(): Long {
-        val item = retrieve().toString()
-        return item.toLongOrNull() ?: throw ValueFormatException(item)
-    }
+    fun list(): List<ConfigNode>
 
-    fun int(): Int {
-        val item = retrieve().toString()
-        return item.toIntOrNull() ?: throw ValueFormatException(item)
-    }
+    fun <T: Any> entries(cls: Class<T>): Map<T, ConfigNode>
 
-    fun bool(): Boolean {
-        val item = retrieve().toString()
-        return item.toBoolean()
-    }
+    fun <T: Any> decodeTo(cls: Class<T>): T
 
-    fun isAbsent() = rawWithoutNull() == Absent
+    operator fun get(key: Any): ConfigNode
 
-    fun raw(): Any? = krait.resolve(keys)
-
-    fun rawWithoutNull(): Any = krait.resolveWithoutNull(keys)
-
-    operator fun get(key: Any) = ConfigNode(krait, keys + listOf(key))
-
-    object Absent
-
-    private fun retrieve(): Any {
-        val rawVal = rawWithoutNull()
-        if (rawVal == Absent) throw ValueNotFoundException(keys)
-        return rawVal
+    companion object {
+        operator fun invoke(krait: Krait, keys: Keys) = SimpleConfigNode(krait, keys)
     }
 }

@@ -33,7 +33,7 @@ subprojects {
 
 dependencies {
     implementation(project("krait-core"))
-    implementation(project("krait-dotenv"))
+    implementation(project("krait-yaml"))
 }
 
 
