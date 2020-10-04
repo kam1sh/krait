@@ -25,6 +25,9 @@ class PropertiesSourceTest {
 
         props["app.loggers.1.name"] = "logger2"
         props["app.loggers.1.level"] = "INFO"
+        props["app.another-list.0"] = "listval"
+        props["app.another-list.1"] = "listval2"
+        props["app.another-list.2.name"] = "nameval"
 
         props["another.key"] = "123"
         PropertiesSource("app")
@@ -50,7 +53,7 @@ class PropertiesSourceTest {
 
     @Test fun testRootEntries() {
         val entries = src.entries(String::class.java)
-        assertEquals(3, entries.size)
+        assertEquals(4, entries.size)
     }
 
     @Test fun testEntries() {
@@ -63,6 +66,18 @@ class PropertiesSourceTest {
     }
 
     @Test fun testLists() {
-        assertEquals(2, src.list(listOf("loggers")).size)
+        val loggers = src.list(listOf("loggers"))
+        assertEquals(2, loggers.size)
+        assertEquals("logger1", loggers[0]["name"].text())
+        assertEquals("WARN", loggers[0]["level"].text())
+        assertEquals("logger2", loggers[1]["name"].text())
+        assertEquals("INFO", loggers[1]["level"].text())
+    }
+
+    @Test fun testListsAdvanced() {
+        val list = src.list(listOf("another-list"))
+        assertEquals("listval", list[0].text())
+        assertEquals("listval2", list[1].text())
+        assertEquals("nameval", list[2]["name"].text())
     }
 }

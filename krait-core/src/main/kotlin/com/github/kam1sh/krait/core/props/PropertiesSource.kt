@@ -9,6 +9,7 @@ import com.github.kam1sh.krait.core.exceptions.ValueFormatException
 import com.github.kam1sh.krait.core.exceptions.ValueNotFoundException
 import com.github.kam1sh.krait.core.misc.castTo
 import org.slf4j.LoggerFactory
+import java.lang.IndexOutOfBoundsException
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -41,7 +42,7 @@ class PropertiesSource(val prefix: String): ConfigSource {
         for (key in fullKeys) {
             val item = current[key] ?: throw ValueNotFoundException(keys)
             if (fullKeys.lastIndexOf(key) == fullKeys.size - 1) {
-                return item.list
+                return item.list()
             } else {
                 current = current[key] ?: throw ValueNotFoundException(keys)
             }
@@ -96,13 +97,15 @@ class PropertiesSource(val prefix: String): ConfigSource {
 
     class Entry(value: Any?): HashMap<String, Entry>() {
         var value: Any? = null
-        val list = mutableListOf<PropertiesConfigNode>()
+        val mapList = mutableMapOf<Int, PropertiesConfigNode>()
+
         init {
             when(value) {
                 is Map<*, *> -> value.forEach {this[it.key.toString()] = Entry(it.value!!)}
                 else -> this.value = value
             }
         }
+
         fun <T> configNodes(cls: Class<T>): Map<T, ConfigNode> {
             if (cls != String::class.java) return mapOf()
             val result = mutableMapOf<T, ConfigNode>()
@@ -112,15 +115,23 @@ class PropertiesSource(val prefix: String): ConfigSource {
             return result
         }
 
+        fun list(): List<ConfigNode> {
+            val result = mutableListOf<ConfigNode>()
+            for (item in mapList.keys.sorted()) {
+                result.add(mapList[item]!!)
+            }
+            return result
+        }
+
         override fun put(key: String, value: Entry): Entry? {
             if (containsKey(key)) throw IllegalArgumentException("Key $key has already been set.")
             val num = key.toIntOrNull()
             if (num != null) {
-                if (num > list.size - 1) {
-                    list.add(PropertiesConfigNode(value))
+                if (!mapList.containsKey(num)) {
+                    mapList[num] = PropertiesConfigNode(value)
                 } else {
                     for (item in value) {
-                        list[num].entry[item.key] = item.value
+                        mapList[num]!!.entry[item.key] = item.value
                     }
                 }
             } else {
@@ -132,7 +143,7 @@ class PropertiesSource(val prefix: String): ConfigSource {
         override fun get(key: String): Entry? {
             val num = key.toIntOrNull()
             if (num != null) {
-                return list[num].entry
+                return mapList[num]?.entry
             }
             return super.get(key)
         }
@@ -141,7 +152,7 @@ class PropertiesSource(val prefix: String): ConfigSource {
 
 class PropertiesConfigNode(val entry: PropertiesSource.Entry) : ConfigNode {
     override fun list(): List<ConfigNode> {
-        return entry.list
+        return entry.list()
     }
 
     override fun get(key: Any): ConfigNode {
