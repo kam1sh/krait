@@ -36,7 +36,17 @@ class PropertiesSource(val prefix: String): ConfigSource {
     }
 
     override fun list(keys: Keys): List<ConfigNode> {
-        throw ValueNotFoundException(keys) // TODO don't support rn
+        var current = parsedProps
+        val fullKeys = listOf(prefix) + keys
+        for (key in fullKeys) {
+            val item = current[key] ?: throw ValueNotFoundException(keys)
+            if (fullKeys.lastIndexOf(key) == fullKeys.size - 1) {
+                return item.list
+            } else {
+                current = current[key] ?: throw ValueNotFoundException(keys)
+            }
+        }
+        throw ValueNotFoundException(keys)
     }
 
     override fun <T : Any> entries(keys: Keys, cls: Class<T>): Map<T, ConfigNode> {
@@ -58,6 +68,7 @@ class PropertiesSource(val prefix: String): ConfigSource {
     }
 
     private fun store(keys: List<String>, value: Any) {
+        log.debug("Setting {}={}", keys, value)
         var current = parsedProps
          for (key in keys) {
             if (keys.lastIndexOf(key) == keys.size - 1) {
@@ -85,6 +96,7 @@ class PropertiesSource(val prefix: String): ConfigSource {
 
     class Entry(value: Any?): HashMap<String, Entry>() {
         var value: Any? = null
+        val list = mutableListOf<PropertiesConfigNode>()
         init {
             when(value) {
                 is Map<*, *> -> value.forEach {this[it.key.toString()] = Entry(it.value!!)}
@@ -102,14 +114,34 @@ class PropertiesSource(val prefix: String): ConfigSource {
 
         override fun put(key: String, value: Entry): Entry? {
             if (containsKey(key)) throw IllegalArgumentException("Key $key has already been set.")
-            return super.put(key, value)
+            val num = key.toIntOrNull()
+            if (num != null) {
+                if (num > list.size - 1) {
+                    list.add(PropertiesConfigNode(value))
+                } else {
+                    for (item in value) {
+                        list[num].entry[item.key] = item.value
+                    }
+                }
+            } else {
+                super.put(key, value)
+            }
+            return value
+        }
+
+        override fun get(key: String): Entry? {
+            val num = key.toIntOrNull()
+            if (num != null) {
+                return list[num].entry
+            }
+            return super.get(key)
         }
     }
 }
 
 class PropertiesConfigNode(val entry: PropertiesSource.Entry) : ConfigNode {
     override fun list(): List<ConfigNode> {
-        return listOf()
+        return entry.list
     }
 
     override fun get(key: Any): ConfigNode {

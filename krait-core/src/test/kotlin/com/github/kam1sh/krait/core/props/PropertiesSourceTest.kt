@@ -19,6 +19,13 @@ class PropertiesSourceTest {
         props["app.nested.key"] = "val"
         props["app.nested.key2"] = "val2"
         props["app.nested.next.key"] = "val3"
+
+        props["app.loggers.0.name"] = "logger1"
+        props["app.loggers.0.level"] = "WARN"
+
+        props["app.loggers.1.name"] = "logger2"
+        props["app.loggers.1.level"] = "INFO"
+
         props["another.key"] = "123"
         PropertiesSource("app")
         src = PropertiesSource("app")
@@ -43,7 +50,7 @@ class PropertiesSourceTest {
 
     @Test fun testRootEntries() {
         val entries = src.entries(String::class.java)
-        assertEquals(2, entries.size)
+        assertEquals(3, entries.size)
     }
 
     @Test fun testEntries() {
@@ -53,5 +60,9 @@ class PropertiesSourceTest {
         assertEquals("val", entries["key"]?.text())
         assertEquals("val2", entries["key2"]?.text())
         assertEquals("val3", entries["next"]?.get("key")?.text())
+    }
+
+    @Test fun testLists() {
+        assertEquals(2, src.list(listOf("loggers")).size)
     }
 }
