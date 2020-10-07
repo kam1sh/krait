@@ -1,11 +1,9 @@
 package com.github.kam1sh.krait.core.props
 
-import com.github.kam1sh.krait.core.exceptions.ValueNotFoundException
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import java.util.*
 
 class PropertiesSourceTest {

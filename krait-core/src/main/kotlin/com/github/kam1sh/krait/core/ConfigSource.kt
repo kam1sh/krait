@@ -6,6 +6,13 @@ interface ConfigSource {
     fun <T: Any> getWithoutNull(keys: Keys, cls: Class<T>): T
 
     fun list(keys: Keys): List<ConfigNode>
-    fun <T: Any> entries(cls: Class<T>): Map<T, ConfigNode>
+
+    fun list(): List<ConfigNode> = list(listOf())
+
     fun <T: Any> entries(keys: Keys, cls: Class<T>): Map<T, ConfigNode>
+
+    /**
+     * Like entries(Keys, Class<T>), but for root entries.
+     */
+    fun <T: Any> entries(cls: Class<T>): Map<T, ConfigNode> = entries(listOf(), cls)
 }
