@@ -1,17 +1,20 @@
-package com.github.kam1sh.krait.core.env
+package com.github.kam1sh.krait.core.dotenv
 
-import com.github.kam1sh.krait.core.exceptions.ValueNotFoundException
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
+import java.io.File
+import java.nio.file.Files
 
-class EnvironmentSourceTest {
-    lateinit var src: EnvironmentSource
+class DotenvSourceTest {
+    lateinit var src: DotenvSource
+    lateinit var file: File
 
     @BeforeEach fun before() {
-        src = EnvironmentSource("APP")
+        src = DotenvSource("APP")
         val data = mapOf(
             "APP__KEY" to "1",
             "APP__ANOTHER_KEY" to "2",
@@ -23,11 +26,18 @@ class EnvironmentSourceTest {
             "APP__LOGGERS__1__LEVEL" to "warn",
             "APP__LOGGERS__2__NAME" to "orm",
             "APP__LOGGERS__2__LEVEL" to "debug",
+            "APP__ENV" to "key=val key2=val2",
             "ANOTHER__KEY" to "null"
         )
-        src.load(data)
+        val text = data.asSequence().map { "${it.key}=${it.value}" }.joinToString("\n")
+        file = Files.createTempFile("", ".env").toFile()
+        file.writeText(text)
+        src.load(file)
     }
 
+    @AfterEach fun after() {
+        file.delete()
+    }
     @Test fun testKey() {
         assertEquals("1", src.get(listOf("key"), String::class.java))
     }
@@ -59,5 +69,9 @@ class EnvironmentSourceTest {
         assertEquals("warn", list[1]["level"].text())
         assertEquals("orm", list[2]["name"].text())
         assertEquals("debug", list[2]["level"].text())
+    }
+
+    @Test fun testValueWithEquals() {
+        assertEquals("key=val key2=val2", src.getWithoutNull(listOf("env"), String::class.java))
     }
 }

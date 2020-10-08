@@ -10,6 +10,8 @@ import com.github.kam1sh.krait.core.misc.castTo
 import org.slf4j.LoggerFactory
 import java.util.*
 
+// TODO create base source common for Properties, Environment and Dotenv
+
 /**
  * JVM properties source.
  * prefix - first key in properties to filter them
@@ -92,26 +94,26 @@ class PropertiesSource(val prefix: String): ConfigSource {
     private fun store(keys: List<String>, value: Any) {
         log.debug("Setting {}={}", keys, value)
         var current = parsedProps
-         for (key in keys) {
-             // latest key?
-             if (keys.lastIndexOf(key) == keys.size - 1) {
-                 // check key so we won't override it
-                 // there could be cases like
-                 // store([app, nested, key], value)
-                 // store([app, nested], value2)
-                 // store([app, nested, key2], value3)
-                 // this check is required so second call won't override first call value
-                 if (current.childMap.containsKey(key)) {
-                     // setting value without overriding whole structure
-                     current[key]!!.value = value
-                 } else {
-                     // creating new entry
-                     current[key] = Entry(value)
-                 }
-             } else {
-                 if (!current.childMap.containsKey(key)) current[key] = Entry(null)
-                 current = current[key]!!
-             }
+        for (key in keys) {
+            // latest key?
+            if (keys.lastIndexOf(key) == keys.size - 1) {
+                // check key so we won't override it
+                // there could be cases like
+                // store([app, nested, key], value)
+                // store([app, nested], value2)
+                // store([app, nested, key2], value3)
+                // this check is required so second call won't override first call value
+                if (current.childMap.containsKey(key)) {
+                    // setting value without overriding whole structure
+                    current[key]!!.value = value
+                } else {
+                    // creating new entry
+                    current[key] = Entry(value)
+                }
+            } else {
+                if (!current.childMap.containsKey(key)) current[key] = Entry(null)
+                current = current[key]!!
+            }
         }
 
     }
@@ -141,7 +143,7 @@ class PropertiesSource(val prefix: String): ConfigSource {
             if (fullKeys.lastIndexOf(key) == fullKeys.size - 1) {
                 return item
             } else {
-                current = current[key.toString()] ?: throw ValueNotFoundException(keys)
+                current = item
             }
         }
         throw ValueNotFoundException(keys)
