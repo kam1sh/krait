@@ -50,8 +50,19 @@ class YamlSourceTest {
         assertEquals("val2", src.get(listOf("nested", "keys", "key2"), String::class.java))
     }
 
+    @Test fun testEntries() {
+        val entries = src.entries(listOf("nested", "keys"), String::class.java)
+        assertEquals(3, entries.size)
+        assertEquals("val1", entries["key1"]?.text())
+        assertEquals("val2", entries["key2"]?.text())
+        assertEquals("val3", entries["key3"]?.text())
+    }
+
     @Test fun testListing() {
-        val data = mapOf<String, String>()
-        data.entries
+        val list = src.list(listOf("array"))
+        assertEquals(3, list.size)
+        assertEquals("val1", list[0].text())
+        assertEquals("val2", list[1].text())
+        assertEquals("val3", list[2].text())
     }
 }

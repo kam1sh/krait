@@ -63,6 +63,7 @@ class DotenvSourceTest {
     @Test fun testList() {
         val list = src.list(listOf("loggers"))
         assertEquals(3, list.size)
+        println(list[0])
         assertEquals("application", list[0]["name"].text())
         assertEquals("info", list[0]["level"].text())
         assertEquals("framework", list[1]["name"].text())
