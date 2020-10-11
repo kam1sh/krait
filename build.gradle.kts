@@ -2,8 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("org.jetbrains.kotlin.jvm") version "1.4.10"
-
-    `java-library`
+    `maven-publish`
 }
 
 allprojects {
@@ -15,10 +14,12 @@ allprojects {
         kotlinOptions.jvmTarget = "1.8"
     }
     group = "com.github.kam1sh"
+    version = "0.1"
 }
 
 subprojects {
-    version = "0.1"
+    apply(plugin = "maven-publish")
+
     dependencies {
         implementation("org.slf4j:slf4j-api:1.7.30")
         testImplementation("ch.qos.logback:logback-classic:1.2.3")
@@ -29,23 +30,27 @@ subprojects {
     tasks.withType<Test>() {
         useJUnitPlatform()
     }
+
+    java {
+        withSourcesJar()
+    }
+
+    publishing {
+        publications {
+            create<MavenPublication>("default") {
+                from(components["java"])
+            }
+        }
+        repositories {
+            maven {
+                url = uri("$buildDir/repository")
+            }
+        }
+    }
 }
 
 dependencies {
-    implementation(project("krait-core"))
-    implementation(project("krait-yaml"))
+    subprojects.forEach {
+        archives(it)
+    }
 }
-
-
-
-/*
-dependencies {
-    implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
-
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-
-    testImplementation("org.jetbrains.kotlin:kotlin-test")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
-}
-*/
-
