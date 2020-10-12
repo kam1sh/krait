@@ -1,4 +1,4 @@
-description = "Powerful configuration library - jackson commons"
+description = "Powerful and extensible configuration library - jackson commons"
 val jacksonVersion = "2.10.1"
 dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))

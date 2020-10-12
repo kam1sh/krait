@@ -1,4 +1,4 @@
-description = "Powerful configuration library - yaml support"
+description = "Powerful and extensible configuration library - yaml support"
 val jacksonVersion = "2.10.1"
 dependencies {
     implementation(project(":krait-core"))
