@@ -2,10 +2,10 @@
 Configuration library for Kotlin, Java, and other JVM languages
 
 ## Why?
-Configuration in JVM world is weird. Usually we use unexpressive, but build-in `-D` command line option or `.properties` file, sometimes there is also some environment variables,
+Configuration in JVM world is weird. Usually we use unexpressive, but built-in `-D` command line option or `.properties` file, sometimes there is also some environment variables,
 rarely YAML, and more rarely you see wome mix of two of them. 
 
-But people are different, and so are their projects, and sometimes you can encounter configuration if unexpected places, like databases or etcd/zookeeper. 
+But people are different, and so are their projects, and sometimes you can encounter configuration in unexpected places, like database or hard-coded path in /opt or something like that. 
 
 So... What if you could use all configuration sources from one place? Like, single interface.
 
