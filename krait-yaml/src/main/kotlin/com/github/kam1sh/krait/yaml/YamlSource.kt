@@ -14,6 +14,15 @@ import com.github.kam1sh.krait.misc.decodeTo
 import org.slf4j.LoggerFactory
 import java.io.File
 
+/**
+ * YAML configuration source.
+ * @param name one of:
+ *   if it ends with .yaml/.yml - file path
+ *   else its just prefix of file name
+ *   examples:
+ *     ../app.yaml -> file path
+ *     app -> prefix, source will look for files like "app.y(a)ml", "app-dev.y(a)ml", etc
+ */
 class YamlSource(val name: String) : ConfigSource {
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -25,6 +34,12 @@ class YamlSource(val name: String) : ConfigSource {
     private var _profileTree: JsonNode? = null
 
     override fun load(profile: String) {
+        // maybe user provided already existing file?..
+        if (name.endsWith(".yaml") || name.endsWith(".yml")) {
+            log.info("Loading {} as primary", name)
+            _tree = File(name).inputStream().use { mapper.readTree(it) }
+            return
+        }
         val fileNames = listOf("$name.yaml", "$name.yml", "$name-$profile.yaml", "$name-$profile.yml")
         for (fileName in fileNames) {
             val file = File(fileName)
