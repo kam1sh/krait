@@ -30,8 +30,8 @@ class YamlSourceTest {
               - val2
               - val3
         """.trimIndent())
-        src = YamlSource(file.toString())
-        src.load()
+        src = YamlSource(file.toString().removeSuffix(".yaml"))
+        src.load("dev")
     }
 
     @AfterEach fun after() {
@@ -39,15 +39,15 @@ class YamlSourceTest {
     }
 
     @Test fun testSimple() {
-        assertEquals("value", src.get(listOf("text-key"), String::class.java))
-        assertEquals(1, src.get(listOf("num-key"), Int::class.java))
-        assertEquals(true, src.get(listOf("bool-key"), Boolean::class.java))
-        assertThrows<ValueFormatException> { println(src.getWithoutNull(listOf("text-key"), Int::class.java)) }
+        assertEquals("value", src.find(listOf("text-key"), String::class.java))
+        assertEquals(1, src.find(listOf("num-key"), Int::class.java))
+        assertEquals(true, src.find(listOf("bool-key"), Boolean::class.java))
+        assertThrows<ValueFormatException> { println(src.find(listOf("text-key"), Int::class.java)) }
     }
 
     @Test fun testNested() {
-        assertEquals("value", src.get(listOf("nested", "key"), String::class.java))
-        assertEquals("val2", src.get(listOf("nested", "keys", "key2"), String::class.java))
+        assertEquals("value", src.find(listOf("nested", "key"), String::class.java))
+        assertEquals("val2", src.find(listOf("nested", "keys", "key2"), String::class.java))
     }
 
     @Test fun testEntries() {

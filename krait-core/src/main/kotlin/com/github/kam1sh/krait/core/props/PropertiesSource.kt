@@ -19,10 +19,12 @@ class PropertiesSource(val prefix: String): AbstractTextSource() {
     private val loaded: Properties
         get() = _loaded ?: throw SourceNotReadyException()
 
+    override fun load(profile: String) = load()
+
     /**
      * Load properties from System.getProperties().
      */
-    override fun load() = load(System.getProperties())
+    fun load() = load(System.getProperties())
 
     /**
      * Load properties from a props.
@@ -41,15 +43,7 @@ class PropertiesSource(val prefix: String): AbstractTextSource() {
     /**
      * Get value or null of type T by its key.
      */
-    override fun <T : Any> get(keys: Keys, cls: Class<T>): T? = retrieveSimple(keys)
-
-    /**
-     * Get value of type T by its key
-     * @throws ValueNotFoundException of key was not found.
-     */
-    override fun <T : Any> getWithoutNull(keys: Keys, cls: Class<T>): T {
-        return retrieveSimple(keys) ?: throw ValueNotFoundException(keys)
-    }
+    override fun <T : Any> find(keys: Keys, cls: Class<T>): T? = retrieveSimple(keys)
 
     /**
      * Get list of properties.

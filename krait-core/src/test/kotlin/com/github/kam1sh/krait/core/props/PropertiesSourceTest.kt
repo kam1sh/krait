@@ -35,18 +35,18 @@ class PropertiesSourceTest {
 
     @Test
     fun testNonExistent() {
-        assertNull(src.get(listOf("not", "existent"), Long::class.java))
+        assertNull(src.find(listOf("not", "existent"), Long::class.java))
     }
 
     @Test fun testSimpleKey() {
-        assertEquals("test", src.get(listOf("key"), String::class.java))
+        assertEquals("test", src.find(listOf("key"), String::class.java))
     }
 
     @Test fun testNestedKey() {
-        assertEquals("val", src.get(listOf("nested", "key"), String::class.java))
-        assertEquals("val2", src.get(listOf("nested", "key2"), String::class.java))
-        assertEquals("val3", src.get(listOf("nested", "next", "key"), String::class.java))
-        assertEquals("wow",  src.get(listOf("nested"), String::class.java))
+        assertEquals("val", src.find(listOf("nested", "key"), String::class.java))
+        assertEquals("val2", src.find(listOf("nested", "key2"), String::class.java))
+        assertEquals("val3", src.find(listOf("nested", "next", "key"), String::class.java))
+        assertEquals("wow",  src.find(listOf("nested"), String::class.java))
     }
 
     @Test fun testRootEntries() {

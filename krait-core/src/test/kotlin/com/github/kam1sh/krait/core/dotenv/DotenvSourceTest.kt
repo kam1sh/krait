@@ -1,7 +1,6 @@
 package com.github.kam1sh.krait.core.dotenv
 
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
@@ -32,24 +31,24 @@ class DotenvSourceTest {
         val text = data.asSequence().map { "${it.key}=${it.value}" }.joinToString("\n")
         file = Files.createTempFile("", ".env").toFile()
         file.writeText(text)
-        src.load(file)
+        src.load(listOf(file))
     }
 
     @AfterEach fun after() {
         file.delete()
     }
     @Test fun testKey() {
-        assertEquals("1", src.get(listOf("key"), String::class.java))
+        assertEquals("1", src.find(listOf("key"), String::class.java))
     }
 
     @Test fun testKeyWithUnderscore() {
-        assertEquals("2", src.get(listOf("another_key"), String::class.java))
+        assertEquals("2", src.find(listOf("another_key"), String::class.java))
     }
 
     @Test fun testNestedKey() {
-        assertEquals("3", src.get(listOf("nested", "key"), String::class.java))
-        assertEquals("4", src.get(listOf("nested", "key2"), String::class.java))
-        assertNull(src.get(listOf("another", "key"), String::class.java))
+        assertEquals("3", src.find(listOf("nested", "key"), String::class.java))
+        assertEquals("4", src.find(listOf("nested", "key2"), String::class.java))
+        assertNull(src.find(listOf("another", "key"), String::class.java))
     }
 
     @Test fun testEntries() {
@@ -73,6 +72,6 @@ class DotenvSourceTest {
     }
 
     @Test fun testValueWithEquals() {
-        assertEquals("key=val key2=val2", src.getWithoutNull(listOf("env"), String::class.java))
+        assertEquals("key=val key2=val2", src.find(listOf("env"), String::class.java))
     }
 }

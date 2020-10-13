@@ -1,14 +1,9 @@
 package com.github.kam1sh.krait.core.dotenv
 
-import com.github.kam1sh.krait.core.ConfigNode
-import com.github.kam1sh.krait.core.ConfigSource
 import com.github.kam1sh.krait.core.Keys
-import com.github.kam1sh.krait.core.env.EnvironmentSource
-import com.github.kam1sh.krait.core.exceptions.KraitException
 import com.github.kam1sh.krait.core.exceptions.SourceNotReadyException
 import com.github.kam1sh.krait.core.exceptions.ValueNotFoundException
 import com.github.kam1sh.krait.core.misc.AbstractTextSource
-import com.github.kam1sh.krait.core.misc.TextualConfigNode
 import com.github.kam1sh.krait.core.misc.castTo
 import org.slf4j.LoggerFactory
 import java.io.File
@@ -16,44 +11,42 @@ import java.io.File
 
 class DotenvSource(val prefix: String, val recursive: Boolean = false) : AbstractTextSource() {
     private val log = LoggerFactory.getLogger(javaClass)
+
     private var _entries: MutableMap<String, String>? = null
     private val entries
         get() = _entries ?: throw SourceNotReadyException()
 
-    override fun load() {
-        val file = discoverFile()
-        load(file)
+    override fun load(profile: String) {
+        val files = listOf(discoverFile(null), discoverFile(profile))
+        log.info("Discovered files: {}", files)
+        load(files)
     }
 
-    fun load(file: File) {
+    fun load(files: List<File?>) {
         _entries = mutableMapOf()
         _parsedTree = Entry(null)
-        file.forEachLine {
+        val handler = { it: String ->
             val bits = it.split('=')
-            val key = bits[0]
-            val value = if (bits.size > 2) {
+            val key = bits[0].toLowerCase().trim()
+            var value = if (bits.size > 2) {
                 bits.subList(1, bits.size).joinToString("=")
             } else {
                 bits[1]
             }
-            if (!key.startsWith(prefix, ignoreCase = true)) {
-                return@forEachLine
+            value = value.trim()
+            if (key.startsWith(prefix, ignoreCase = true)) {
+                entries[key] = value
+                store(key.split("__"), value)
             }
-            entries[key.toLowerCase()] = value
-            store(key.toLowerCase().split("__"), value)
         }
+        files.forEach { it?.forEachLine(action = handler) }
         log.debug("Entries: {}", entries)
         log.debug("Parsed tree: {}", parsedTree)
     }
 
-    override fun <T: Any> get(keys: Keys, cls: Class<T>): T? {
+    override fun <T: Any> find(keys: Keys, cls: Class<T>): T? {
         val item = retrieveSimple(keys)
         return item?.castTo(cls)
-    }
-
-    override fun <T: Any> getWithoutNull(keys: Keys, cls: Class<T>): T {
-        val item = retrieveSimple(keys) ?: throw ValueNotFoundException(keys)
-        return item.castTo(cls)
     }
 
     override fun <T : Any> entries(keys: Keys, cls: Class<T>) = retrieveAdvanced(keys).configNodes(cls)
@@ -79,19 +72,16 @@ class DotenvSource(val prefix: String, val recursive: Boolean = false) : Abstrac
         throw ValueNotFoundException(keys)
     }
 
-    private fun discoverFile(dir: File? = null): File {
+    private fun discoverFile(profile: String? = null, dir: File? = null): File? {
         val dirOrCwd = dir ?: File(System.getProperty("user.dir"))
         if (dirOrCwd.isFile) throw IllegalArgumentException("Got file instead of directory.")
+        val fileName = if (profile != null) ".${profile}.env" else ".env"
         for (file in dirOrCwd.listFiles()!!) {
-            if (file.isFile) continue
-            if (file.name == ".env") return file
+            if (file.isDirectory) continue
+            if (file.name == fileName) return file
         }
-        if (recursive) {
-            return discoverFile(dirOrCwd.parentFile)
-        }
-        else {
-            throw KraitException("Dotenv file not found.")
-        }
+        return if (recursive) {
+            discoverFile(profile, dirOrCwd.parentFile)
+        } else null
     }
-
 }

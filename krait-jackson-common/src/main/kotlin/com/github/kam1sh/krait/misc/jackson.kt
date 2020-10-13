@@ -26,29 +26,25 @@ class JacksonConfigNode(val jsonNode: JsonNode) : ConfigNode {
 
     override fun <T : Any> decodeTo(cls: Class<T>) = jsonNode.decodeTo(cls)
 
-    override fun get(key: Any): ConfigNode {
-        return when(key) {
-            is String -> JacksonConfigNode(jsonNode[key])
-            is Int -> JacksonConfigNode(jsonNode[key])
-            else -> throw ValueNotFoundException(listOf(key))
-        }
-    }
+    override fun get(key: Int) = JacksonConfigNode(jsonNode[key])
+
+    override fun get(key: String) = JacksonConfigNode(jsonNode[key])
 
     @Suppress("UNCHECKED_CAST")
-    override fun <T : Any> entries(cls: Class<T>): Map<T, ConfigNode> {
+    override fun <T : Any> entries(cls: Class<T>): MutableMap<T, ConfigNode> {
         when {
             cls == String::class.java -> {
                 val out = mutableMapOf<String, ConfigNode>()
                 for (it in jsonNode.fields()) {
                     out[it.key] = JacksonConfigNode(it.value)
                 }
-                return out as Map<T, ConfigNode>
+                return out as MutableMap<T, ConfigNode>
             }
-            else -> return mapOf()
+            else -> return mutableMapOf()
         }
     }
 
-    override fun list(): List<ConfigNode> {
+    override fun list(): MutableList<ConfigNode> {
         val out = mutableListOf<ConfigNode>()
         for (it in jsonNode.elements()) {
             out.add(JacksonConfigNode(it))

@@ -140,7 +140,12 @@ class TextualConfigNode(val entry: AbstractTextSource.Entry) : ConfigNode {
     }
     override fun <T : Any> entries(cls: Class<T>) = entry.configNodes(cls)
     override fun list(): List<ConfigNode> = entry.list()
-    override fun get(key: Any): ConfigNode {
+    override fun get(key: String): ConfigNode {
+        val item = entry[key] ?: throw ValueNotFoundException(listOf(key))
+        return TextualConfigNode(item)
+    }
+
+    override fun get(key: Int): ConfigNode {
         val item = entry[key.toString()] ?: throw ValueNotFoundException(listOf(key))
         return TextualConfigNode(item)
     }

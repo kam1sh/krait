@@ -18,7 +18,9 @@ class EnvironmentSource(val prefix: String) : AbstractTextSource() {
     private val entries
         get() = _entries ?: throw SourceNotReadyException()
 
-    override fun load() = load(System.getenv())
+    override fun load(profile: String) = load()
+
+    fun load() = load(System.getenv())
 
     fun load(env: Map<String, String>) {
         _entries = mutableMapOf()
@@ -33,11 +35,7 @@ class EnvironmentSource(val prefix: String) : AbstractTextSource() {
         }
     }
 
-    override fun <T : Any> get(keys: Keys, cls: Class<T>) = retrieveSimple(keys)?.castTo(cls)
-
-    override fun <T : Any> getWithoutNull(keys: Keys, cls: Class<T>): T {
-        return retrieveSimple(keys)?.castTo(cls) ?: throw ValueNotFoundException(keys)
-    }
+    override fun <T : Any> find(keys: Keys, cls: Class<T>) = retrieveSimple(keys)?.castTo(cls)
 
     override fun <T : Any> entries(keys: Keys, cls: Class<T>) = retrieveAdvanced(keys).configNodes(cls)
 

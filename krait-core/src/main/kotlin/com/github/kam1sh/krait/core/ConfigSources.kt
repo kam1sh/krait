@@ -8,5 +8,8 @@ class ConfigSources: Iterable<ConfigSource> {
 
     override fun iterator(): Iterator<ConfigSource> = items.iterator()
 
+    /**
+     * Add new source.
+     */
     fun add(src: ConfigSource) = items.add(src)
 }

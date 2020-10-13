@@ -29,7 +29,7 @@ class KraitTest {
             set("app.list.1.name", "name1")
             set("app.list.1.level", "level1")
         }
-        kr.load()
+        kr.load("dev")
         src.load(props)
         assertEquals("val", kr["key"]["item"].text())
         assertEquals(1, kr["key"]["num"].long())
@@ -74,7 +74,7 @@ class KraitTest {
                 add(src1)
             }
         }
-        kr.load()
+        kr.load("dev")
         src1.load(props1)
         src2.load(props2)
         assertEquals("new-val", kr["nested"]["key"].text())
