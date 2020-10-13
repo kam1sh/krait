@@ -41,5 +41,16 @@ for (node in kr["loggers"].list()) {println(node["level"].text())} // will be th
 ```
 More examples in [tests](https://github.com/kam1sh/krait/tree/main/krait-core/src/test/kotlin/com/github/kam1sh/krait/core). Documentation will be available soon. Or later.
 
+## I want to try it!
+You can add Krait repo from [Bintray](https://bintray.com/kam1sh/krait). Here's how to do it in Gradle Kotlin DSL:
+```
+repositories {
+    maven { url = uri("https://dl.bintray.com/kam1sh/krait") }
+}
+// ...
+implementation("com.github.kam1sh.krait:krait-core:0.2.1") // core library, properties, environment and dotenv support
+implementation("com.github.kam1sh.krait:krait-yaml:0.2.1") // YAML support
+```
+
 ## Naming
 This library named after [Krait Phantom](https://elite-dangerous.fandom.com/wiki/Krait_Phantom) from Elite: Dangerous.
