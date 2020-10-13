@@ -3,7 +3,7 @@ Configuration library for Kotlin, Java, and other JVM languages
 
 ## Why?
 Configuration in JVM world is weird. Usually we use unexpressive, but built-in `-D` command line option or `.properties` file, sometimes there is also some environment variables,
-rarely YAML, and more rarely you see wome mix of two of them. 
+rarely YAML, and more rarely you see some mix of two of them. 
 
 But people are different, and so are their projects, and sometimes you can encounter configuration in unexpected places, like database or hard-coded path in /opt or something like that. 
 
