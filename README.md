@@ -31,7 +31,9 @@ val kr = Krait {
     add(PropertiesSource("app")) // will be accessed in second order
   }
 }
-kr.load()
+// load dev profile. some sources support loading different profiles,
+// but EnvironmentSource and PropertiesSource don't.
+kr.load("dev")
 assertEquals("test", kr["key"].text())
 assertEquals(123, kr["numbers"]["first"].long())
 assertEquals(3, kr["numbers"].entries(String::class.java).size) // yay, merge of lists of different sources!
@@ -40,4 +42,4 @@ for (node in kr["loggers"].list()) {println(node["level"].text())} // will be th
 More examples in [tests](https://github.com/kam1sh/krait/tree/main/krait-core/src/test/kotlin/com/github/kam1sh/krait/core). Documentation will be available soon. Or later.
 
 ## Naming
-This livrary named after [Krait Phantom](https://elite-dangerous.fandom.com/wiki/Krait_Phantom) from Elite: Dangerous.
+This library named after [Krait Phantom](https://elite-dangerous.fandom.com/wiki/Krait_Phantom) from Elite: Dangerous.
