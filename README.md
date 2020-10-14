@@ -48,9 +48,9 @@ repositories {
     maven { url = uri("https://dl.bintray.com/kam1sh/krait") }
 }
 // ...
-implementation("com.github.kam1sh.krait:krait-core:0.2.1") // core library, properties, environment and dotenv support
-implementation("com.github.kam1sh.krait:krait-yaml:0.2.1") // YAML support
+implementation("com.github.kam1sh.krait:krait-core:0.3.2") // core library, properties, environment and dotenv support
+implementation("com.github.kam1sh.krait:krait-yaml:0.3.2") // YAML support
 ```
 
 ## Naming
-This library named after [Krait Phantom](https://elite-dangerous.fandom.com/wiki/Krait_Phantom) from Elite: Dangerous.
+This library named after [Krait MkII](https://elite-dangerous.fandom.com/wiki/Krait_MkII) from Elite: Dangerous.
