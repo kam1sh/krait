@@ -1,5 +1,6 @@
 package com.github.kam1sh.krait.core
 
+import com.github.kam1sh.krait.core.exceptions.KraitException
 import com.github.kam1sh.krait.core.exceptions.ValueNotFoundException
 import org.slf4j.LoggerFactory
 
@@ -40,6 +41,15 @@ class Krait(private val block: Krait.() -> Unit) {
         activeProfile = profile
         block()
         srcs.map { it.load(profile) }
+    }
+
+    /**
+     * Reload all sources and optionally change profile.
+     * @param profile profile to switch
+     */
+    fun reload(profile: String? = null) {
+        val pr = profile ?: activeProfile ?: throw KraitException("Krait has not been loaded yet.")
+        srcs.map { it.load(pr) }
     }
 
     /**
