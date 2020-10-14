@@ -39,7 +39,7 @@ class SystemPropertiesSource(val prefix: String): AbstractPropertiesSource() {
     /**
      * Get value or null of type T by its key.
      */
-    override fun <T : Any> find(keys: Keys, cls: Class<T>): T? = retrieveSimple(listOf(prefix) + keys)
+    override fun <T : Any> find(keys: Keys, cls: Class<T>): T? = retrieveSimple(listOf(prefix) + keys, cls)
 
     /**
      * Get list of properties.

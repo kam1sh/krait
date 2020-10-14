@@ -17,12 +17,12 @@ abstract class AbstractPropertiesSource: AbstractTextSource() {
      * Accesses only prefixed properties by simple algorithm.
      */
     @Suppress("UNCHECKED_CAST")
-    protected fun <T> retrieveSimple(keys: Keys): T? {
+    protected fun <T> retrieveSimple(keys: Keys, cls: Class<T>): T? {
         val prefixedKeys: Keys = keys
         // format Keys to a prefix.setting.key...
         val stringKeys = prefixedKeys.map { it.toString() }.joinToString(".")
         log.trace("Accessing {}", stringKeys)
-        return loaded[stringKeys] as T
+        return loaded[stringKeys]?.toString()?.castTo(cls)
     }
 
     /**

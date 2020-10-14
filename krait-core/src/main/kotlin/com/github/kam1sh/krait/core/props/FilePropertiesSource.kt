@@ -38,7 +38,7 @@ class FilePropertiesSource(val path: String, val classLoader: ClassLoader? = nul
         }
     }
 
-    override fun <T : Any> find(keys: Keys, cls: Class<T>): T? = retrieveSimple(keys)
+    override fun <T : Any> find(keys: Keys, cls: Class<T>): T? = retrieveSimple(keys, cls)
 
     override fun list(keys: Keys) = retrieveAdvanced(keys).list()
 
