@@ -3,6 +3,7 @@ package com.github.kam1sh.krait.core.props
 import com.github.kam1sh.krait.core.Keys
 import com.github.kam1sh.krait.core.exceptions.SourceNotReadyException
 import com.github.kam1sh.krait.core.exceptions.ValueNotFoundException
+import com.github.kam1sh.krait.core.misc.AbstractPropertiesSource
 import com.github.kam1sh.krait.core.misc.AbstractTextSource
 import org.slf4j.LoggerFactory
 import java.util.*
@@ -11,13 +12,8 @@ import java.util.*
  * JVM properties source.
  * prefix - first key in properties to filter them
  */
-class PropertiesSource(val prefix: String): AbstractTextSource() {
-    private val log = LoggerFactory.getLogger(PropertiesSource::class.java)
-
-    // filtered properties from .load(props)
-    private var _loaded: Properties? = null
-    private val loaded: Properties
-        get() = _loaded ?: throw SourceNotReadyException()
+class SystemPropertiesSource(val prefix: String): AbstractPropertiesSource() {
+    private val log = LoggerFactory.getLogger(SystemPropertiesSource::class.java)
 
     override fun load(profile: String) = load()
 
@@ -43,7 +39,7 @@ class PropertiesSource(val prefix: String): AbstractTextSource() {
     /**
      * Get value or null of type T by its key.
      */
-    override fun <T : Any> find(keys: Keys, cls: Class<T>): T? = retrieveSimple(keys)
+    override fun <T : Any> find(keys: Keys, cls: Class<T>): T? = retrieveSimple(listOf(prefix) + keys)
 
     /**
      * Get list of properties.
@@ -57,7 +53,7 @@ class PropertiesSource(val prefix: String): AbstractTextSource() {
      * src.load()
      * src.list(listOf("loggers")) // [{name=myapp, level=info}, {name=framework, level=warn}]
      */
-    override fun list(keys: Keys) = retrieveAdvanced(keys).list()
+    override fun list(keys: Keys) = retrieveAdvanced(listOf(prefix) + keys).list()
 
     /**
      * Get meo of of nodes by a key.
@@ -70,38 +66,6 @@ class PropertiesSource(val prefix: String): AbstractTextSource() {
      * src.load()
      * src.entries(listOf("months")) // {jan=ConfigNode(1), feb=ConfigNode(2), mar=ConfigNode(3)}
      */
-    override fun <T : Any> entries(keys: Keys, cls: Class<T>) = retrieveAdvanced(keys).configNodes(cls)
-
-
-    /**
-     * Retrieve value by its full path.
-     * Accesses only prefixed properties by simple algorithm.
-     */
-    @Suppress("UNCHECKED_CAST")
-    private fun <T> retrieveSimple(keys: Keys): T? {
-        val prefixedKeys: Keys = listOf(prefix) + keys
-        // format Keys to a prefix.setting.key...
-        val stringKeys = prefixedKeys.map { it.toString() }.joinToString(".")
-        log.trace("Accessing {}", stringKeys)
-        return loaded[stringKeys] as T
-    }
-
-    /**
-     * Retrieve Entry by its full path.
-     * Works with parsed Entry tree.
-     */
-    private fun retrieveAdvanced(keys: Keys): Entry {
-        var current = parsedTree
-        val fullKeys = listOf(prefix) + keys
-        for (key in fullKeys) {
-            val item = current[key.toString()] ?: throw ValueNotFoundException(keys)
-            if (fullKeys.lastIndexOf(key) == fullKeys.size - 1) {
-                return item
-            } else {
-                current = item
-            }
-        }
-        throw ValueNotFoundException(keys)
-    }
+    override fun <T : Any> entries(keys: Keys, cls: Class<T>) = retrieveAdvanced(listOf(prefix) + keys).configNodes(cls)
 
 }

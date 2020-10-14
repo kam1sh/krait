@@ -27,7 +27,7 @@ allprojects {
         kotlinOptions.jvmTarget = "1.8"
     }
     group = "com.github.kam1sh.krait"
-    version = "0.2.1"
+    version = "0.3.0"
 }
 
 subprojects {

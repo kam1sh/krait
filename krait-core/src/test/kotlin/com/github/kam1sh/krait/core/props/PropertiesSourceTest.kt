@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test
 import java.util.*
 
 class PropertiesSourceTest {
-    lateinit var src: PropertiesSource
+    lateinit var src: SystemPropertiesSource
 
     @BeforeEach
     fun before() {
@@ -28,8 +28,8 @@ class PropertiesSourceTest {
         props["app.another-list.2.name"] = "nameval"
 
         props["another.key"] = "123"
-        PropertiesSource("app")
-        src = PropertiesSource("app")
+        SystemPropertiesSource("app")
+        src = SystemPropertiesSource("app")
         src.load(props)
     }
 

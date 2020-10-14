@@ -2,7 +2,7 @@ package com.github.kam1sh.krait.core
 
 import com.github.kam1sh.krait.core.env.EnvironmentSource
 import com.github.kam1sh.krait.core.exceptions.ValueNotFoundException
-import com.github.kam1sh.krait.core.props.PropertiesSource
+import com.github.kam1sh.krait.core.props.SystemPropertiesSource
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -10,7 +10,7 @@ import java.util.*
 
 class KraitTest {
     @Test fun testOneSource() {
-        val src = PropertiesSource("app")
+        val src = SystemPropertiesSource("app")
         val kr = Krait {
             sources {
                 add(src)
@@ -52,7 +52,7 @@ class KraitTest {
     }
 
     @Test fun testMultipleSources() {
-        val src1 = PropertiesSource("app")
+        val src1 = SystemPropertiesSource("app")
         val props1 = Properties().apply {
             set("app.nested.key", "val")
             set("app.loggers.0.name", "application")

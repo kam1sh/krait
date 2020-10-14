@@ -13,17 +13,20 @@ import com.github.kam1sh.krait.misc.JacksonConfigNode
 import com.github.kam1sh.krait.misc.decodeTo
 import org.slf4j.LoggerFactory
 import java.io.File
+import java.io.InputStream
 
 /**
  * YAML configuration source.
  * @param name one of:
  *   if it ends with .yaml/.yml - file path
+ *   if classLoader provided - prefix of path
  *   else its just prefix of file name
  *   examples:
  *     ../app.yaml -> file path
  *     app -> prefix, source will look for files like "app.y(a)ml", "app-dev.y(a)ml", etc
+ *     configs/app & classLoader=... -> resources/configs/app.y(a)ml, resources/configs/app-dev.y(a)ml, etc
  */
-class YamlSource(val name: String) : ConfigSource {
+class YamlSource(val name: String, val classLoader: ClassLoader? = null) : ConfigSource {
     private val log = LoggerFactory.getLogger(javaClass)
 
     private val mapper = ObjectMapper(YAMLFactory())
@@ -42,16 +45,29 @@ class YamlSource(val name: String) : ConfigSource {
         }
         val fileNames = listOf("$name.yaml", "$name.yml", "$name-$profile.yaml", "$name-$profile.yml")
         for (fileName in fileNames) {
-            val file = File(fileName)
-            if (!file.exists()) {
-                continue
+            // classLoader provided?
+            val parsedFile = if (classLoader != null) {
+                // trying to load file as resource
+                val stream: InputStream? = classLoader.getResourceAsStream(fileName)
+                if (stream == null) {
+                    log.debug("Resource {} not found", fileName)
+                    continue
+                }
+                stream.use { mapper.readTree(it) }
+            } else {
+                // loading as generic file
+                val file = File(fileName)
+                if (!file.exists()) {
+                    log.debug("File {} not found", fileName)
+                    continue
+                }
+                file.inputStream().use { mapper.readTree(it) }
             }
-            val parsedFile = file.inputStream().use { mapper.readTree(it) }
             if (_tree == null) {
-                log.info("Loading {} as primary", file)
+                log.info("Loading {} as primary", fileName)
                 _tree = parsedFile
             } else {
-                log.info("Loading {} as profile", file)
+                log.info("Loading {} as profile", fileName)
                 _profileTree = parsedFile
             }
         }
