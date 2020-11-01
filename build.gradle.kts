@@ -27,7 +27,7 @@ allprojects {
         kotlinOptions.jvmTarget = "1.8"
     }
     group = "com.github.kam1sh.krait"
-    version = "0.3.2"
+    version = "0.3.3"
 }
 
 subprojects {
@@ -35,7 +35,9 @@ subprojects {
     apply(plugin = "com.jfrog.bintray")
 
     dependencies {
-        implementation("org.slf4j:slf4j-api:1.7.30")
+        api("org.slf4j:slf4j-api:1.7.30")
+        api(platform("org.jetbrains.kotlin:kotlin-bom"))
+        api("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
         testImplementation("ch.qos.logback:logback-classic:1.2.3")
         testImplementation("org.junit.jupiter:junit-jupiter:5.6.2")
         testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.2")
