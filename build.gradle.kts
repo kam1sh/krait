@@ -1,19 +1,9 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath("com.jfrog.bintray:com.jfrog.bintray.gradle.plugin:1.8.5")
-    }
-}
-
 plugins {
     id("org.jetbrains.kotlin.jvm") version "1.4.10"
     `maven-publish`
-    id("com.jfrog.bintray") version "1.8.5"
 }
 
 description = "Powerful and extensible configuration library"
@@ -32,7 +22,6 @@ allprojects {
 
 subprojects {
     apply(plugin = "maven-publish")
-    apply(plugin = "com.jfrog.bintray")
 
     dependencies {
         api("org.slf4j:slf4j-api:1.7.30")
@@ -51,6 +40,7 @@ subprojects {
         withSourcesJar()
     }
 
+/*
     bintray {
         user = System.getProperty("username")
         key = System.getProperty("token")
@@ -77,8 +67,18 @@ subprojects {
             }
         }
     }
+*/
 
     publishing {
+        repositories {
+            maven {
+                url = uri("https://maven.closeencounterscorps.org")
+                credentials {
+                    username = System.getProperty("username")
+                    password = System.getProperty("token")
+                }
+            }
+        }
         publications {
             create<MavenPublication>("krait") {
                 from(components["java"])
