@@ -17,7 +17,7 @@ allprojects {
         kotlinOptions.jvmTarget = "1.8"
     }
     group = "com.github.kam1sh.krait"
-    version = "0.3.3"
+    version = "0.4.0"
 }
 
 subprojects {
@@ -40,42 +40,22 @@ subprojects {
         withSourcesJar()
     }
 
-/*
-    bintray {
-        user = System.getProperty("username")
-        key = System.getProperty("token")
-        publish = true
-
-        setPublications("krait")
-
-        pkg.apply {
-            repo = "krait"
-            userOrg = "kam1sh"
-            name = project.name
-            desc = project.description
-            githubRepo = "kam1sh/krait"
-            websiteUrl = "https://github.com/kam1sh/krait"
-            issueTrackerUrl = "https://github.com/kam1sh/krait/issues"
-            vcsUrl = "https://github.com/kam1sh/krait.git"
-            setLabels("kotlin", "configuration", "yaml", "dotenv")
-            setLicenses("MIT")
-            publicDownloadNumbers = true
-            version.apply {
-                name = project.version.toString()
-                desc = "https://github.com/kam1sh/krait"
-                vcsTag = project.version.toString()
-            }
-        }
-    }
-*/
-
     publishing {
         repositories {
             maven {
+                name = "jfrog"
+                url = uri("https://cec.jfrog.io/artifactory/maven")
+                credentials {
+                    username = System.getProperty("jfrogUsername")
+                    password = System.getProperty("jfrogToken")
+                }
+            }
+            maven {
+                name = "backup"
                 url = uri("https://maven.closeencounterscorps.org")
                 credentials {
-                    username = System.getProperty("username")
-                    password = System.getProperty("token")
+                    username = System.getProperty("backupUsername")
+                    password = System.getProperty("backupToken")
                 }
             }
         }

@@ -12,6 +12,11 @@ interface ConfigSource {
     fun load(profile: String)
 
     /**
+     * Check if value exists.
+     */
+    fun exists(keys: Keys): Boolean
+
+    /**
      * Get value of type T by a list of keys.
      */
     fun <T: Any> find(keys: Keys, cls: Class<T>): T?

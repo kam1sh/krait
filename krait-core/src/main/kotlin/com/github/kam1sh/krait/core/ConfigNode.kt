@@ -28,16 +28,14 @@ interface ConfigNode {
     fun bool() = decodeTo(Boolean::class.java)
 
     /**
-     * Check if there is a value in this node.
+     * Check if there is a value in this node
      */
-    fun isAbsent(): Boolean {
-        try {
-            text()
-            return false
-        } catch (exc: ValueNotFoundException) {
-            return true
-        }
-    }
+    fun exists(): Boolean
+
+    /**
+     * Check if there is no value in this node.
+     */
+    fun isAbsent() = !exists()
 
     /**
      * Get list of nodes.

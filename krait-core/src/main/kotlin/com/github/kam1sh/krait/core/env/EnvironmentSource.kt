@@ -35,6 +35,11 @@ class EnvironmentSource(val prefix: String) : AbstractTextSource() {
         }
     }
 
+    override fun exists(keys: Keys): Boolean {
+        val item = retrieveSimple(keys)
+        return item != null
+    }
+
     override fun <T : Any> find(keys: Keys, cls: Class<T>) = retrieveSimple(keys)?.castTo(cls)
 
     override fun <T : Any> entries(keys: Keys, cls: Class<T>) = retrieveAdvanced(keys).configNodes(cls)

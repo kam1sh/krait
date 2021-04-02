@@ -9,6 +9,7 @@ class SimpleConfigNode(
     private val krait: Krait,
     private val keys: Keys
 ) : ConfigNode {
+    override fun exists() = krait.exists(keys)
     override fun <T: Any> decodeTo(cls: Class<T>): T = krait.find(keys, cls) ?: throw ValueNotFoundException(keys)
 
     override operator fun get(key: String) = SimpleConfigNode(krait, keys + listOf(key))

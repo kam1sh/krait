@@ -44,6 +44,15 @@ class DotenvSource(val prefix: String, val recursive: Boolean = false) : Abstrac
         log.debug("Parsed tree: {}", parsedTree)
     }
 
+    override fun exists(keys: Keys): Boolean {
+        return try {
+            val item = retrieveAdvanced(keys)
+            item.exists()
+        } catch (exc: ValueNotFoundException) {
+            false
+        }
+    }
+
     override fun <T: Any> find(keys: Keys, cls: Class<T>): T? {
         val item = retrieveSimple(keys)
         return item?.castTo(cls)

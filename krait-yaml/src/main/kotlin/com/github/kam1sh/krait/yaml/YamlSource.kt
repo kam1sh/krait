@@ -73,6 +73,11 @@ class YamlSource(val name: String, val classLoader: ClassLoader? = null) : Confi
         }
     }
 
+    override fun exists(keys: Keys): Boolean {
+        val item = retrieve(keys)
+        return item != null
+    }
+
     override fun <T: Any> find(keys: Keys, cls: Class<T>) = retrieveFromBoth(keys)?.decodeTo(cls)
 
     override fun list(keys: Keys): List<ConfigNode> {

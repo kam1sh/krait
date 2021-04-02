@@ -3,6 +3,7 @@ package com.github.kam1sh.krait.yaml
 import com.github.kam1sh.krait.core.exceptions.ValueFormatException
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -64,5 +65,9 @@ class YamlSourceTest {
         assertEquals("val1", list[0].text())
         assertEquals("val2", list[1].text())
         assertEquals("val3", list[2].text())
+    }
+
+    @Test fun testExists() {
+        assertTrue(src.exists(listOf("nested")))
     }
 }

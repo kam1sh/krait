@@ -2,12 +2,13 @@ package com.github.kam1sh.krait.core
 
 import com.github.kam1sh.krait.core.exceptions.KraitException
 import com.github.kam1sh.krait.core.exceptions.ValueNotFoundException
+import com.sun.org.apache.xpath.internal.operations.Bool
 import org.slf4j.LoggerFactory
 
 /**
  * Configure Krait from here.
  * Usage:
- * val kr = Krait {
+ * val kr = Krait("dev") {
  *     profiles = setOf("dev", "test", "prod")
  *     sources {
  *         add(EnvironmentSource("APP")) // will have highest priority
@@ -19,11 +20,18 @@ import org.slf4j.LoggerFactory
  * val dbUrl = kr["database"]["url"].text()
  * db.connect(dbUrl)
  */
-class Krait(private val block: Krait.() -> Unit) {
+class Krait(
+    val initProfile: String,
+    private val block: Krait.() -> Unit
+) {
 
     private val log = LoggerFactory.getLogger(Krait::class.java)
     private val srcs = ConfigSources()
     private var activeProfile: String? = null
+
+    init {
+        load(initProfile)
+    }
 
     /**
      * Configure sources.
@@ -50,6 +58,20 @@ class Krait(private val block: Krait.() -> Unit) {
     fun reload(profile: String? = null) {
         val pr = profile ?: activeProfile ?: throw KraitException("Krait has not been loaded yet.")
         srcs.map { it.load(pr) }
+    }
+
+    /**
+     * Check if value exists.
+     */
+    fun exists(keys: Keys): Boolean {
+        return srcs.any { it.exists(keys) }
+    }
+
+    /**
+     * Check if value absent.
+     */
+    fun absent(keys: Keys): Boolean {
+        return srcs.all { !it.exists(keys) }
     }
 
     /**

@@ -24,6 +24,8 @@ fun <T> JsonNode.decodeTo(cls: Class<T>): T = when {
 
 class JacksonConfigNode(val jsonNode: JsonNode) : ConfigNode {
 
+    override fun exists() = jsonNode.isEmpty
+
     override fun <T : Any> decodeTo(cls: Class<T>) = jsonNode.decodeTo(cls)
 
     override fun get(key: Int) = JacksonConfigNode(jsonNode[key])

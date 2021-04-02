@@ -11,7 +11,7 @@ import java.util.*
 class KraitTest {
     @Test fun testOneSource() {
         val src = SystemPropertiesSource("app")
-        val kr = Krait {
+        val kr = Krait("dev") {
             sources {
                 add(src)
             }
@@ -29,7 +29,6 @@ class KraitTest {
             set("app.list.1.name", "name1")
             set("app.list.1.level", "level1")
         }
-        kr.load("dev")
         src.load(props)
         assertEquals("val", kr["key"]["item"].text())
         assertEquals(1, kr["key"]["num"].long())
@@ -49,6 +48,7 @@ class KraitTest {
         assertEquals("level0", list[0]["level"].text())
         assertEquals("name1", list[1]["name"].text())
         assertEquals("level1", list[1]["level"].text())
+        assertTrue(kr["entries"].exists())
     }
 
     @Test fun testMultipleSources() {
@@ -68,13 +68,12 @@ class KraitTest {
             "APP__ENTRIES__KEY2" to "val2"
         )
         val src2 = EnvironmentSource("APP")
-        val kr = Krait {
+        val kr = Krait("dev") {
             sources {
                 add(src2)
                 add(src1)
             }
         }
-        kr.load("dev")
         src1.load(props1)
         src2.load(props2)
         assertEquals("new-val", kr["nested"]["key"].text())

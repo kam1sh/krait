@@ -1,8 +1,7 @@
 package com.github.kam1sh.krait.core.dotenv
 
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.io.File
@@ -37,6 +36,7 @@ class DotenvSourceTest {
     @AfterEach fun after() {
         file.delete()
     }
+
     @Test fun testKey() {
         assertEquals("1", src.find(listOf("key"), String::class.java))
     }
@@ -73,5 +73,9 @@ class DotenvSourceTest {
 
     @Test fun testValueWithEquals() {
         assertEquals("key=val key2=val2", src.find(listOf("env"), String::class.java))
+    }
+
+    @Test fun testExists() {
+        assertTrue(src.exists(listOf("loggers")))
     }
 }

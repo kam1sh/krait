@@ -103,6 +103,8 @@ abstract class AbstractTextSource : ConfigSource {
             return childMap[key]
         }
 
+        fun exists() = listMap.isNotEmpty() || childMap.isNotEmpty() || value != null
+
         /**
          * Converts map of Entries to a map of ConfigNodes.
          */
@@ -134,6 +136,7 @@ abstract class AbstractTextSource : ConfigSource {
  * Entry wrapper that implements ConfigNode interface.
  */
 class TextualConfigNode(val entry: AbstractTextSource.Entry) : ConfigNode {
+    override fun exists() = entry.value != null
     override fun <T : Any> decodeTo(cls: Class<T>): T {
         val item = entry.value ?: throw ValueNotFoundException(listOf())
         return item.castTo(cls)

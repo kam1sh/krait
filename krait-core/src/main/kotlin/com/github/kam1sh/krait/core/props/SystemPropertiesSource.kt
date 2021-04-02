@@ -36,6 +36,10 @@ class SystemPropertiesSource(val prefix: String): AbstractPropertiesSource() {
         log.debug("Parsed tree: {}", parsedTree)
     }
 
+    override fun exists(keys: Keys): Boolean {
+        return super.exists(listOf(prefix) + keys)
+    }
+
     /**
      * Get value or null of type T by its key.
      */

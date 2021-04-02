@@ -12,6 +12,16 @@ abstract class AbstractPropertiesSource: AbstractTextSource() {
     protected val loaded: Properties
         get() = _loaded ?: throw SourceNotReadyException()
 
+    override fun exists(keys: Keys): Boolean {
+        return try {
+            val item = retrieveAdvanced(keys)
+            item.exists()
+        } catch (exc: ValueNotFoundException) {
+            log.debug("Value not found at {}:", keys, exc)
+            false
+        }
+    }
+
     /**
      * Retrieve value by its full path.
      * Accesses only prefixed properties by simple algorithm.
