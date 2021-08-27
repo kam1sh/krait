@@ -43,14 +43,6 @@ subprojects {
     publishing {
         repositories {
             maven {
-                name = "jfrog"
-                url = uri("https://cec.jfrog.io/artifactory/maven")
-                credentials {
-                    username = System.getProperty("jfrogUsername")
-                    password = System.getProperty("jfrogToken")
-                }
-            }
-            maven {
                 name = "backup"
                 url = uri("https://maven.closeencounterscorps.org")
                 credentials {

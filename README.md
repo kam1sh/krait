@@ -25,15 +25,15 @@ Meet Krait, configuration library, inspired by Dynaconf:
 // APP__NUMBERS__THIRD = 3
 // APP__LOGGERS__2__NAME = orm
 // APP__LOGGERS__2__LEVEL = debug
-val kr = Krait {
+
+// start with dev profile. some sources support loading different profiles,
+// but EnvironmentSource and PropertiesSource doesn't.
+val kr = Krait("dev") {
   sources {
     add(EnvironmentSource("APP")) // use environment variables, starting from 'APP'
     add(PropertiesSource("app")) // will be accessed in second order
   }
 }
-// load dev profile. some sources support loading different profiles,
-// but EnvironmentSource and PropertiesSource don't.
-kr.load("dev")
 assertEquals("test", kr["key"].text())
 assertEquals(123, kr["numbers"]["first"].long())
 assertEquals(3, kr["numbers"].entries(String::class.java).size) // yay, merge of lists of different sources!
@@ -42,14 +42,14 @@ for (node in kr["loggers"].list()) {println(node["level"].text())} // will be th
 More examples in [tests](https://github.com/kam1sh/krait/tree/main/krait-core/src/test/kotlin/com/github/kam1sh/krait/core). Documentation will be available soon. Or later.
 
 ## I want to try it!
-You can add Krait repo from [Bintray](https://bintray.com/kam1sh/krait). Here's how to do it in Gradle Kotlin DSL:
+You can add Krait repo from [CEC repo](https://bintray.com/kam1sh/krait). Here's how to do it in Gradle Kotlin DSL:
 ```
 repositories {
-    maven { url = uri("https://dl.bintray.com/kam1sh/krait") }
+    maven { url = uri("https://maven.closeencounterscorps.org/releases") }
 }
 // ...
-implementation("com.github.kam1sh.krait:krait-core:0.3.2") // core library, properties, environment and dotenv support
-implementation("com.github.kam1sh.krait:krait-yaml:0.3.2") // YAML support
+implementation("com.github.kam1sh.krait:krait-core:0.4.0") // core library, properties, environment and dotenv support
+implementation("com.github.kam1sh.krait:krait-yaml:0.4.0") // YAML support
 ```
 
 ## Naming
